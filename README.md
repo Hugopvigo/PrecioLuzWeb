@@ -8,7 +8,7 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Python](https://img.shields.io/badge/Python_3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-blue?style=for-the-badge)
 
 ---
 
@@ -222,7 +222,7 @@ Los colores, componentes y lógica de tiers son una traducción directa del cód
 
 <div align="center">
 
-**MIT** — haz lo que quieras ❤️
+**CC BY-NC-SA 4.0** — Compartir con atribución, sin uso comercial
 
 ---
 
