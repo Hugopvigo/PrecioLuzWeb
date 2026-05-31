@@ -1,0 +1,14 @@
+@import 'tailwindcss';
+
+@keyframes aurora-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(3vw, -4vh) scale(1.05); }
+  66%       { transform: translate(-2vw, 3vh) scale(0.97); }
+}
+
+.aurora-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  animation: aurora-drift 25s ease-in-out infinite;
+}
