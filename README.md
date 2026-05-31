@@ -1,222 +1,229 @@
+<div align="center">
+
 # ⚡ PrecioLuz Web
 
-> Precio de la luz PVPC en tiempo real · España Peninsular
+### *El precio de la luz en tu navegador, al instante*
 
-Web app que muestra los precios horarios del PVPC (Precio Voluntario para el Pequeño Consumidor) publicados por REE/ESIOS, con diseño visual idéntico a la [app Android PrecioLuz](https://github.com/Hugopvigo/PrecioLuzApp).
-
----
-
-## Características
-
-- **Precios en tiempo real** — hoy y mañana (desde las 20:15h)
-- **Sin API key para el usuario** — el servidor obtiene los datos una vez al día y los sirve como JSON
-- **3 reintentos automáticos** para precios de mañana: 20:15 · 20:45 · 21:30 hora Madrid
-- **Diseño réplica de la app Android** — Aurora background, glassmorphism, colores por tier
-- **Rate limiting** — 20 req/min por IP para proteger el endpoint
-- **Caché SQLite** en servidor — ESIOS solo se consulta 4 veces al día máximo
-- **Dark / Light / Auto** tema con toggle en el header
+![React](https://img.shields.io/badge/React_19-61DAFB?style=for-the-badge&logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Python](https://img.shields.io/badge/Python_3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
 ---
 
-## Vista previa
+*Web app que muestra los precios horarios del PVPC publicados por REE/ESIOS,*
+*con el mismo diseño visual que la [app Android](https://github.com/Hugopvigo/PrecioLuzApp).*
+
+<br>
 
 ```
-┌─────────────────────────────────────┐
-│ ⚡ PrecioLuz   Precio de la luz · PVPC   ✦ │
-├─────────────────────────────────────┤
-│ Hoy                        ● En directo │
-│ Sábado, 31 de mayo                      │
-│                                         │
-│ ┌─────────────────────────────────┐     │
-│ │ Ahora · 14–15h                  │     │
-│ │ 0,1823            €/kWh         │     │
-│ │ ● Caro   Punta   ↑ Sube a 15:00 │     │
-│ └─────────────────────────────────┘     │
-│                                         │
-│ ┌────────┐ ┌────────┐ ┌────────┐       │
-│ │Mín 💰  │ │ Media  │ │Máx 💀  │       │
-│ │ 0,061  │ │ 0,112  │ │ 0,201  │       │
-│ │03–04h  │ │ €/kWh  │ │19–20h  │       │
-│ └────────┘ └────────┘ └────────┘       │
-│                                         │
-│         [ Hoy ]  [ Mañana ]            │
-└─────────────────────────────────────────┘
+╭──────────────────────────────────────────╮
+│ ⚡ PrecioLuz                             │
+│                                          │
+│    €/kWh                                 │
+│   ┌─────┐                                │
+│   │0.142│  ● Caro · Punta                │
+│   └─────┘  ↑ Sube a las 15:00            │
+│                                          │
+│   💰 Min: 0.061    💀 Max: 0.201         │
+│                                          │
+│   [ Hoy ]  [ Mañana ]                    │
+╰──────────────────────────────────────────╯
 ```
+
+</div>
 
 ---
 
-## Arquitectura
+## ✨ Características
 
-```
-                    ┌─────────────────────┐
-                    │    Cloudflare DNS    │
-                    └──────────┬──────────┘
-                               │ HTTPS
-                    ┌──────────▼──────────┐
-                    │   Apache (SSL/TLS)  │
-                    │ precioluz.hugopvigo │
-                    └──────────┬──────────┘
-                               │ :8081
-              ┌────────────────▼────────────────┐
-              │         Docker Compose           │
-              │                                  │
-              │  ┌──────────┐  ┌──────────────┐ │
-              │  │  Nginx   │  │   FastAPI    │ │
-              │  │  :80     │  │   :8000      │ │
-              │  │ React SPA│  │ + APScheduler│ │
-              │  │ /api/ ──►│  │ + SQLite     │ │
-              │  └──────────┘  └──────┬───────┘ │
-              └─────────────────────── │ ────────┘
-                                       │ 1×/día máx
-                              ┌────────▼────────┐
-                              │  REE / ESIOS API │
-                              └─────────────────┘
-```
-
-**Stack:**
-- `server/` — Python 3.12 · FastAPI · APScheduler · aiosqlite · slowapi
-- `web/` — React 19 · TypeScript · Vite 8 · Tailwind CSS 4 · TanStack Query
+| | |
+|---|---|
+| 🔄 | **Tiempo real** — precios de hoy y mañana (desde las 20:15h) |
+| 🔒 | **Sin API key** — el servidor gestiona ESIOS, tú solo consumes JSON |
+| ⏱️ | **3 reintentos** — 20:15 · 20:45 · 21:30 para precios de mañana |
+| 🎨 | **Réplica visual** — Aurora background, glassmorphism, colores por tier |
+| 🛡️ | **Rate limiting** — 20 req/min por IP |
+| 💾 | **Caché SQLite** — ESIOS solo se consulta 4 veces al día |
+| 🌗 | **Dark / Light / Auto** — toggle en el header |
 
 ---
 
-## Estructura del proyecto
+## 🏗️ Arquitectura
 
 ```
-PrecioLuzWeb/
-├── server/
-│   ├── main.py          # FastAPI app + rate limiting (slowapi)
-│   ├── scheduler.py     # APScheduler: 06:05 / 20:15 / 20:45 / 21:30 Madrid
-│   ├── esios.py         # Fetch ESIOS — solo Península (geo_id 8741)
-│   ├── db.py            # SQLite via aiosqlite
-│   └── requirements.txt
-├── web/
-│   ├── src/
-│   │   ├── App.tsx                     # Layout principal + tabs
-│   │   ├── types.ts                    # HourPrice, DayPrices, PriceTier
-│   │   ├── utils.ts                    # buildDayPrices, colores por tier
-│   │   ├── components/
-│   │   │   ├── AuroraBackground.tsx    # Fondo animado con blobs
-│   │   │   ├── GlassCard.tsx           # Card glassmorphism
-│   │   │   ├── HeroPriceCard.tsx       # Precio actual + tier + tendencia
-│   │   │   ├── StatRow.tsx             # Mín 💰 / Media / Máx 💀
-│   │   │   ├── HourList.tsx            # 24 filas con barras y emojis
-│   │   │   └── LiveIndicator.tsx       # Dot verde pulsante
-│   │   └── hooks/
-│   │       └── usePrices.ts            # React Query, staleTime 30min
-│   └── index.html
-├── docker/
-│   ├── docker-compose.yml  # api (interno) + web (puerto 8081)
-│   ├── Dockerfile.api
-│   ├── Dockerfile.web
-│   └── nginx.conf          # SPA + proxy /api/ → FastAPI
-└── .env.example
+                          ☁️  Cloudflare DNS
+                                  │
+                                  ▼
+                        ┌─────────────────┐
+                        │  Apache (SSL)   │
+                        │  precioluz.hugo │
+                        └────────┬────────┘
+                                 │
+                    ┌────────────▼────────────┐
+                    │     🐳 Docker Compose   │
+                    │                         │
+                    │  ┌─────────┐ ┌────────┐ │
+                    │  │ Nginx   │ │ FastAPI│ │
+                    │  │  :80    │ │  :8000 │ │
+                    │  │ React ◄─┤─┤  ↕     │ │
+                    │  │   SPA   │ │ SQLite │ │
+                    │  └─────────┘ └────┬───┘ │
+                    └───────────────────│─────┘
+                                        │
+                               ┌────────▼────────┐
+                               │  🇪🇸 REE/ESIOS   │
+                               │   1×/día máx    │
+                               └─────────────────┘
 ```
 
 ---
 
-## Despliegue
+## 🚀 Despliegue rápido
 
 ### Requisitos
 - Docker + Docker Compose
-- Token de API de [ESIOS/REE](https://api.esios.ree.es/) (gratuito, registro en web de REE)
+- Token gratuito de [ESIOS/REE](https://api.esios.ree.es/)
 
-### Pasos
+### ¡A arrancar!
 
 ```bash
-# 1. Clonar y configurar entorno
+# Clonar
 git clone https://github.com/Hugopvigo/PrecioLuzWeb.git
 cd PrecioLuzWeb
+
+# Configurar
 cp .env.example .env
-# Editar .env y añadir tu ESIOS_API_TOKEN
+nano .env  # ← Añade tu ESIOS_API_TOKEN
 
-# 2. Arrancar
+# ¡Listo!
 docker compose -f docker/docker-compose.yml up -d --build
-
-# 3. Verificar
-curl http://localhost:8081/api/precios
 ```
 
-La app estará disponible en `http://localhost:8081`.
+> 🌐 Disponible en `http://localhost:8081`
 
 ### Variables de entorno
 
 | Variable | Descripción |
-|----------|-------------|
-| `ESIOS_API_TOKEN` | Token de la API de REE/ESIOS (obligatorio) |
-| `TZ` | Zona horaria del servidor (debe ser `Europe/Madrid`) |
-| `LOG_LEVEL` | Nivel de log Python: `INFO` (defecto) o `DEBUG` |
+|:---------|:------------|
+| `ESIOS_API_TOKEN` | Token de ESIOS/REE (obligatorio) |
+| `TZ` | Zona horaria → `Europe/Madrid` |
+| `LOG_LEVEL` | `INFO` (defecto) o `DEBUG` |
 
 ---
 
-## API Endpoint
+## 📡 API
 
 ### `GET /api/precios`
-
-Devuelve los precios del día actual y, a partir de las 20:15h, del día siguiente.
-
-**Rate limit:** 20 peticiones/minuto por IP · `Cache-Control: public, max-age=1800`
 
 ```json
 {
   "updated_at": "2026-05-31T21:30:00+02:00",
   "today": {
     "date": "2026-05-31",
-    "prices": [0.06123, 0.05891, ..., 0.18340]
+    "prices": [0.061, 0.058, "...", 0.183]
   },
   "tomorrow": {
     "date": "2026-06-01",
-    "prices": [0.07201, 0.06890, ..., 0.15620]
+    "prices": [0.072, 0.068, "...", 0.156]
   }
 }
 ```
 
-`prices` es un array de 24 valores en **€/kWh con impuestos incluidos**, siendo el índice la hora (0 = 00:00–01:00, 23 = 23:00–24:00). `tomorrow` es `null` antes de las 20:15h.
+<div align="center">
+
+| Dato | Descripción |
+|:-----|:------------|
+| `prices` | 24 valores en **€/kWh** (impuestos incluidos) |
+| `tomorrow` | `null` antes de las 20:15h |
+| Rate limit | 20 peticiones/min por IP |
+| Cache | `Cache-Control: public, max-age=1800` |
+
+</div>
 
 ### `GET /api/health`
 
 ```json
-{"status": "ok"}
+{ "status": "ok" }
 ```
 
 ---
 
-## Scheduler de precios
+## ⏰ Scheduler
 
-| Hora (Madrid) | Acción |
-|---------------|--------|
-| 06:05 | Actualiza precios de hoy + limpia datos de anteayer |
-| 20:15 | Intento 1 — precios de mañana |
-| 20:45 | Intento 2 — precios de mañana (si el 1 falló) |
-| 21:30 | Intento 3 — precios de mañana (último intento) |
+```
+ 06:05  ──  📅 Actualiza hoy + limpia anteayer
+ 20:15  ──  🌙 Intento 1: precios de mañana
+ 20:45  ──  🌙 Intento 2: si el 1 falló
+ 21:30  ──  🌙 Intento 3: último intento
+```
 
-REE publica los precios del día siguiente habitualmente entre las 20:00 y las 20:30h. Los 3 intentos cubren los casos de publicación tardía.
+> REE publica los precios del día siguiente entre las 20:00 y 20:30h.
+> Los 3 intentos cubren publicaciones tardías.
 
 ---
 
-## Desarrollo local
+## 🛠️ Desarrollo local
 
 ```bash
-# Instalar dependencias frontend
-npm install
+# Frontend
+npm install && npm run dev    # Vite en :5173
 
-# Backend (en un terminal)
-cd server && pip install -r requirements.txt
+# Backend
+cd server
+pip install -r requirements.txt
 uvicorn server.main:app --reload --port 8000
+```
 
-# Frontend (en otro terminal)
-npm run dev   # Vite en :5173, proxy /api → :8000
+> El proxy de Vite redirige `/api/*` → `:8000` automáticamente.
+
+---
+
+## 📁 Estructura
+
+```
+PrecioLuzWeb/
+├── 🐍 server/
+│   ├── main.py          ← FastAPI + rate limiting
+│   ├── scheduler.py     ← APScheduler (4 ejecuciones/día)
+│   ├── esios.py         ← Fetch ESIOS (solo Península)
+│   ├── db.py            ← SQLite async
+│   └── requirements.txt
+├── ⚛️ web/
+│   └── src/
+│       ├── App.tsx
+│       ├── components/
+│       │   ├── AuroraBackground.tsx
+│       │   ├── GlassCard.tsx
+│       │   ├── HeroPriceCard.tsx
+│       │   ├── HourList.tsx
+│       │   ├── LiveIndicator.tsx
+│       │   └── StatRow.tsx
+│       └── hooks/
+│           └── usePrices.ts
+└── 🐳 docker/
+    ├── docker-compose.yml
+    ├── Dockerfile.api
+    ├── Dockerfile.web
+    └── nginx.conf
 ```
 
 ---
 
-## Relación con la app Android
+## 🔗 Relación con la app Android
 
-Este proyecto actúa como backend para [PrecioLuzApp](https://github.com/Hugopvigo/PrecioLuzApp). La app Android consume `GET /api/precios`, almacena los resultados en Room (caché local) y no necesita API key propia de ESIOS.
+Este proyecto es el backend de [PrecioLuzApp](https://github.com/Hugopvigo/PrecioLuzApp).
+La app consume `GET /api/precios`, almacena en Room (caché local) y no necesita API key propia.
 
-Diseño visual: los colores, componentes y lógica de tiers/tramos son una traducción directa del código Kotlin de la app.
+Los colores, componentes y lógica de tiers son una traducción directa del código Kotlin.
 
 ---
 
-## Licencia
+<div align="center">
 
-MIT — ver [LICENSE](LICENSE)
+**MIT** — haz lo que quieras ❤️
+
+[![GitHub](https://img.shields.io/badge/GitHub-Hugopvigo-181717?style=for-the-badge&logo=github)](https://github.com/Hugopvigo)
+
+</div>
