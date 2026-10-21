@@ -1,3 +1,7 @@
+<meta property="og:title" content="PRECIOLUZWEB">
+<meta property="og:description" content="El precio de la luz, hora a hora, con los datos que publica REE.">
+<meta property="og:image" content="https://raw.githubusercontent.com/Hugopvigo/PrecioLuzWeb/main/docs/capturas/og.png">
+
 <p align="center">
   <img src="docs/capturas/00-cabecera.png" alt="PrecioLuzWeb — el PVPC de la luz hora a hora" width="100%">
 </p>
