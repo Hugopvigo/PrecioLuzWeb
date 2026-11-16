@@ -3,10 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PrecioLuz — PVPC España</title>
-  <meta name="description" content="Precio de la luz PVPC en tiempo real para la Peninsula Iberica" />
+  <title>PrecioLuz — Precio de la luz PVPC en tiempo real | España</title>
+  <meta name="description" content="Precio de la luz PVPC en tiempo real para la península ibérica: precio por horas, horas más baratas y evolución del precio de la electricidad en España." />
+  <link rel="canonical" href="https://precioluz.hugoperezvigo.es/" />
   <meta name="theme-color" content="#F3F5F8" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#0F131A" media="(prefers-color-scheme: dark)" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="PrecioLuz" />
+  <meta property="og:locale" content="es_ES" />
+  <meta property="og:url" content="https://precioluz.hugoperezvigo.es/" />
+  <meta property="og:title" content="PrecioLuz — Precio de la luz PVPC en tiempo real" />
+  <meta property="og:description" content="Consulta el precio de la luz PVPC por horas, descubre las horas más baratas y sigue la evolución del precio de la electricidad en España." />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="PrecioLuz — Precio de la luz PVPC en tiempo real" />
+  <meta name="twitter:description" content="Precio de la luz PVPC por horas para la península ibérica: horas baratas y evolución del precio." />
   <script>
     // Aplica el tema guardado antes de pintar, para que no parpadee al cargar.
     try {
@@ -15,9 +25,26 @@
     } catch (e) {}
   </script>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "PrecioLuz",
+    "url": "https://precioluz.hugoperezvigo.es/",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Web",
+    "inLanguage": "es",
+    "description": "Precio de la luz PVPC en tiempo real para la península ibérica: precio por horas, horas más baratas y evolución del precio de la electricidad en España.",
+    "offers": { "@type": "Offer", "price": "0" }
+  }
+  </script>
 </head>
 <body>
   <div id="root"></div>
+  <noscript>
+    <h1>PrecioLuz — Precio de la luz PVPC en tiempo real</h1>
+    <p>PrecioLuz muestra el precio de la luz PVPC por horas para la península ibérica, con las horas más baratas del día y la evolución del precio de la electricidad en España. Activa JavaScript para ver los precios actualizados.</p>
+  </noscript>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>
