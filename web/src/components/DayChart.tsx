@@ -6,7 +6,8 @@ import { LEVEL_LABELS, TRAMO_LABELS, formatPrice, hh } from '../utils'
 interface Props { day: DayPrices; nowHour: number | null; best: PriceWindow | null }
 
 const BAR: Record<PriceLevel, string> = { LOW: 'bg-low', MID: 'bg-mid', HIGH: 'bg-high' }
-const TRAMO_BAR: Record<Tramo, string> = { VALLE: 'bg-line', LLANO: 'bg-mid', PUNTA: 'bg-ink' }
+// Tramo con significado de precio: valle barato (verde), llano medio (ámbar), punta caro (rojo).
+const TRAMO_BAR: Record<Tramo, string> = { VALLE: 'bg-low', LLANO: 'bg-mid', PUNTA: 'bg-high' }
 
 export default function DayChart({ day, nowHour, best }: Props) {
   const [selected, setSelected] = useState(nowHour ?? day.min.hour)
