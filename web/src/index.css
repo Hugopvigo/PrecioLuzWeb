@@ -2,19 +2,19 @@
 
 /* Cada color tiene valor en claro y en oscuro; el tema activo lo decide color-scheme. */
 @theme {
-  --color-bg:      light-dark(#F3F5F8, #0F131A);
-  --color-surface: light-dark(#FFFFFF, #171D27);
-  --color-ink:     light-dark(#141A24, #E9EDF3);
-  --color-muted:   light-dark(#5A6577, #9AA5B7);
-  --color-line:    light-dark(#DCE1E9, #2A3342);
-  --color-accent:  light-dark(#D9520A, #FF9447);
+  --color-bg:      light-dark(#E9EEF7, #0A0E16);
+  --color-surface: light-dark(#FFFFFF, #151C29);
+  --color-ink:     light-dark(#0E1420, #F1F4FA);
+  --color-muted:   light-dark(#4B5870, #A3AFC4);
+  --color-line:    light-dark(#C9D2E1, #2D384D);
+  --color-accent:  light-dark(#F05A00, #FF8A1F);
 
-  /* Niveles de precio: solo lo barato y lo caro llevan color. */
-  --color-low:  light-dark(#0B7F43, #3DD68C);
-  --color-mid:  light-dark(#8B95A7, #5E6A7E);
-  --color-high: light-dark(#C22B2B, #FF7466);
+  /* Niveles de precio: semáforo saturado (verde barato, ámbar medio, rojo caro). */
+  --color-low:  light-dark(#05994A, #1FE27F);
+  --color-mid:  light-dark(#F0A000, #FFB81F);
+  --color-high: light-dark(#E5202B, #FF4D5A);
   /* Fondo de la hora actual en el gráfico y en la lista. */
-  --color-now:  light-dark(#FFEFD9, #33260F);
+  --color-now:  light-dark(#FFDDAA, #4A3108);
 }
 
 :root                     { color-scheme: light dark; }

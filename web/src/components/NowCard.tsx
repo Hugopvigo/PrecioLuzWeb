@@ -5,9 +5,9 @@ import { LEVEL_LABELS, TRAMO_LABELS, formatPrice, hh } from '../utils'
 interface Props { day: DayPrices; nowHour: number | null }
 
 const PILL: Record<PriceLevel, string> = {
-  LOW:  'bg-low/15 text-low',
+  LOW:  'bg-low/20 text-low',
   MID:  'bg-ink/5 text-muted',
-  HIGH: 'bg-high/15 text-high',
+  HIGH: 'bg-high/20 text-high',
 }
 
 function versusAverage(price: number, avg: number): string {

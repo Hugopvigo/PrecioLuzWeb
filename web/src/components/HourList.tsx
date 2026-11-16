@@ -25,7 +25,7 @@ export default function HourList({ day, nowHour, defaultOpen }: Props) {
                 key={h.hour}
                 className={`grid grid-cols-[5.5rem_minmax(0,1fr)_auto] items-center gap-2 px-2 py-2 rounded-lg ${
                   isNow ? 'bg-now font-semibold' : 'border-b border-line/60 last:border-0'
-                } ${past ? 'opacity-55' : ''}`}
+                } ${past ? 'opacity-65' : ''}`}
               >
                 <span>{hh(h.hour)}–{hh(h.hour + 1)} h</span>
                 <span className="truncate">

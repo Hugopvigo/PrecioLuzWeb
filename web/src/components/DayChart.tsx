@@ -50,12 +50,12 @@ export default function DayChart({ day, nowHour, best }: Props) {
               onFocus={() => setSelected(h.hour)}
               aria-label={`${hh(h.hour)} h: ${formatPrice(h.priceKwh)} euros por kilovatio hora, ${LEVEL_LABELS[h.level]}`}
               className={`h-full flex items-end rounded cursor-pointer ${
-                h.hour === nowHour ? 'bg-now' : inBest(h.hour) ? 'bg-low/15' : ''
+                h.hour === nowHour ? 'bg-now' : inBest(h.hour) ? 'bg-low/25' : ''
               }`}
             >
               <span
                 className={`block w-full min-h-[3px] rounded-t-sm ${BAR[h.level]} ${
-                  nowHour !== null && h.hour < nowHour ? 'opacity-40' : ''
+                  nowHour !== null && h.hour < nowHour ? 'opacity-60' : ''
                 } ${h.hour === selected ? 'outline-2 outline-offset-1 outline-ink' : ''}`}
                 style={{ height: `${(h.priceKwh / scale) * 100}%` }}
               />
