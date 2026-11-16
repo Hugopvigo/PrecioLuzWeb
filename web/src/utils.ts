@@ -1,24 +1,9 @@
-import type { DayPrices, HourPrice, PriceTier, Tramo } from './types'
+import type { DayPrices, HourPrice, PriceLevel, PriceWindow, Tramo } from './types'
 
-export const TIER_COLORS_DARK: Record<PriceTier, string> = {
-  GREEN:  '#30D158',
-  YELLOW: '#FFE433',
-  ORANGE: '#FF7020',
-  RED:    '#FF3B30',
-}
-
-export const TIER_COLORS_LIGHT: Record<PriceTier, string> = {
-  GREEN:  '#15A34A',
-  YELLOW: '#B89500',
-  ORANGE: '#D95200',
-  RED:    '#CC1624',
-}
-
-export const TIER_LABELS: Record<PriceTier, string> = {
-  GREEN:  'Barato',
-  YELLOW: 'Moderado',
-  ORANGE: 'Caro',
-  RED:    'Muy caro',
+export const LEVEL_LABELS: Record<PriceLevel, string> = {
+  LOW:  'Barato',
+  MID:  'Normal',
+  HIGH: 'Caro',
 }
 
 export const TRAMO_LABELS: Record<Tramo, string> = {
@@ -27,7 +12,21 @@ export const TRAMO_LABELS: Record<Tramo, string> = {
   PUNTA: 'Punta',
 }
 
-function tramoForHour(hour: number, dateStr: string): Tramo {
+export const hh = (hour: number) => String(hour % 24).padStart(2, '0')
+
+export const formatPrice = (price: number, decimals = 4) =>
+  price.toFixed(decimals).replace('.', ',')
+
+// Una hora es barata o cara si se aparta más de un 15 % de la media del día.
+const LEVEL_MARGIN = 0.15
+
+export function levelFor(price: number, avg: number): PriceLevel {
+  if (price < avg * (1 - LEVEL_MARGIN)) return 'LOW'
+  if (price > avg * (1 + LEVEL_MARGIN)) return 'HIGH'
+  return 'MID'
+}
+
+export function tramoForHour(hour: number, dateStr: string): Tramo {
   const dow = new Date(dateStr + 'T12:00:00').getDay()
   if (dow === 0 || dow === 6) return 'VALLE'
   if ((hour >= 10 && hour <= 13) || (hour >= 18 && hour <= 21)) return 'PUNTA'
@@ -35,41 +34,33 @@ function tramoForHour(hour: number, dateStr: string): Tramo {
   return 'LLANO'
 }
 
-export function buildDayPrices(date: string, rawPrices: number[]): DayPrices {
-  const indexed = rawPrices.map((p, h) => ({ h, p }))
-  const sorted  = [...indexed].sort((a, b) => a.p - b.p)
-  const tiers: PriceTier[] = ['GREEN','GREEN','GREEN','GREEN','GREEN','GREEN',
-                               'YELLOW','YELLOW','YELLOW','YELLOW','YELLOW','YELLOW',
-                               'ORANGE','ORANGE','ORANGE','ORANGE','ORANGE','ORANGE',
-                               'RED','RED','RED','RED','RED','RED']
-  const tierMap = new Map<number, PriceTier>()
-  sorted.forEach(({ h }, rank) => tierMap.set(h, tiers[rank]))
+const mean = (values: number[]) => values.reduce((s, v) => s + v, 0) / values.length
 
+export function buildDayPrices(date: string, rawPrices: number[]): DayPrices {
+  const avg = mean(rawPrices)
   const hours: HourPrice[] = rawPrices.map((priceKwh, hour) => ({
     hour,
     priceKwh,
-    tier:  tierMap.get(hour)!,
+    level: levelFor(priceKwh, avg),
     tramo: tramoForHour(hour, date),
-    isMin: false,
-    isMax: false,
   }))
-
-  const minH = hours.reduce((a, b) => a.priceKwh < b.priceKwh ? a : b)
-  const maxH = hours.reduce((a, b) => a.priceKwh > b.priceKwh ? a : b)
-  hours[minH.hour] = { ...hours[minH.hour], isMin: true }
-  hours[maxH.hour] = { ...hours[maxH.hour], isMax: true }
-
-  const sum = (i: number) => hours[i].priceKwh + hours[i + 1].priceKwh
-  const bestStart  = Array.from({ length: 23 }, (_, i) => i).reduce((best, i)  => sum(i) < sum(best) ? i : best, 0)
-  const worstStart = Array.from({ length: 23 }, (_, i) => i).reduce((worst, i) => sum(i) > sum(worst) ? i : worst, 0)
 
   return {
     date,
     hours,
-    avg: rawPrices.reduce((s, p) => s + p, 0) / 24,
-    min: hours[minH.hour],
-    max: hours[maxH.hour],
-    bestWindow:  [bestStart, bestStart + 1],
-    worstWindow: [worstStart, worstStart + 1],
+    avg,
+    min: hours.reduce((a, b) => a.priceKwh <= b.priceKwh ? a : b),
+    max: hours.reduce((a, b) => a.priceKwh >= b.priceKwh ? a : b),
   }
+}
+
+// La franja de `length` horas seguidas más barata que empieza en `from` o después.
+// Devuelve null si ya no quedan tantas horas en el día.
+export function cheapestWindow(hours: HourPrice[], from: number, length: number): PriceWindow | null {
+  let best: PriceWindow | null = null
+  for (let start = from; start + length <= hours.length; start++) {
+    const avg = mean(hours.slice(start, start + length).map(h => h.priceKwh))
+    if (!best || avg < best.avg) best = { start, length, avg }
+  }
+  return best
 }

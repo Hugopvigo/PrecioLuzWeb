@@ -19,6 +19,7 @@ export function usePrices(): PricesResult {
       return res.json()
     },
     staleTime: 30 * 60 * 1000,
+    refetchInterval: 30 * 60 * 1000,
     retry: 2,
   })
 
